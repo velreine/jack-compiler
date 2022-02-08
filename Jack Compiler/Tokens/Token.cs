@@ -63,23 +63,23 @@ namespace Jack_Compiler.Tokens
     {
       if (Type == TokenType.INTEGER_CONSTANT)
       {
-        return "<int_literal>" + IntegerValue + "</int_literal>";
+        return $"<int_literal>{IntegerValue}</int_literal>";
       }
       if (Type == TokenType.STRING_CONSTANT)
       {
-        return "<string>" + StringValue + "</string>";
+        return $"<string>{StringValue}</string>";
       }
       if (Lexer.symbolsToStr.TryGetValue(Type, out char symbol))
       {
-        return "<symbol>" + symbol + "</symbol>";
+        return $"<symbol>{symbol}</symbol>";
       }
       if (Lexer.keywordsToStr.TryGetValue(Type, out string keyword))
       {
-        return "<keyword>" + keyword + "</keyword>";
+        return $"<keyword>{keyword}</keyword>";
       }
       if (Type == TokenType.IDENTIFIER)
       {
-        return "<identifier>" + StringValue + "</identifier>";
+        return $"<identifier>{StringValue}</identifier>";
       }
 
       throw new System.Exception(/*#ConfusedAF*/"Could not recognise XML gender " + "Could not XML'ize ");

@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
+// string -> tokens
 namespace Jack_Compiler.Tokens
 {
     public class Lexer
@@ -82,12 +84,59 @@ namespace Jack_Compiler.Tokens
             
         // }
 
-        public List<Token> LexTokens() {
-            List<Token> tokens = new();
+        public TokenList LexTokens() {
+            TokenList tokens = new();
+
+            List<string> wormdsUwU = new();            
+
+            int substringStart = 0;
+            for(int i = 0; i < _inputFileContent.Length; i++) {
+
+              char? next = i+1 == _inputFileContent.Length ? null : _inputFileContent[i+1];
+              char current = _inputFileContent[i];
+
+              // If we have a next character.
+              if(next is char nxt) {
+
+                // And the next character is a symbol.
+                if(symbols.ContainsKey(nxt) || nxt == ' '){
+                  // Then all the previous should be looked up in keyword.
+                  // if it does not match with a keyword it must be an identifier.
+
+                  // main()
+                  // startPosition = 0
+                  // endPosition = 3
+                  // foo() main() bar()
+
+                  // identifier = _inputFileContent.Substring(startPosition, endPosition);
+                  var line = _inputFileContent[substringStart..i]; // fUwUck cUwUck
+                  //wormdsUwU.Add(_inputFileContent.Substring(substringStart, i - substringStart + 1));
+                  var a = _inputFileContent.Substring(substringStart, i - substringStart + 1);
+
+                  if(!String.IsNullOrEmpty(a.Trim())){
+                    wormdsUwU.Add(a.Trim());
+                  }
+
+                  // Where the identifier starts will move ahead.
+                  substringStart = i+1;
+                }
+              }
+              
+
+            }
+
+            foreach(string word in wormdsUwU) {
+              System.Console.WriteLine("Cancer: " + word);
+            }
+
+            return tokens;
+
+            // dead zombie code airbow or below =)))))
 
             string[] words = _inputFileContent.Split(' ');
 
             foreach(var word in words) {
+                Console.WriteLine("LEX: " + word);
                 // word can be symbol, keyword, int, string, identifier
 
                 // Check if word is a symbol.
@@ -118,7 +167,7 @@ namespace Jack_Compiler.Tokens
                 // A valid identifier starts with a letter or an underscore.
                 // It can contain numbers, but must not start with it.
                 if (char.IsLetter(word[0]) || word.StartsWith('_')) {
-                    if (!word.All(c => char.IsLetter(c) || char.IsNumber(c) || c == '_')) {
+                    if (word.All(c => !char.IsLetter(c) && !char.IsNumber(c) && c != '_')) {
                         throw new System.Exception($"Identifier not allowed only [a-zA-Z0-9_] allowed, got {word}");
                     }
                     tokens.Add(new Token(TokenType.IDENTIFIER, stringValue: word));

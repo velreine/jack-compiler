@@ -55,6 +55,3 @@ public enum TokenType
 
   IDENTIFIER,                 // var v
 }
-
-// var -> keyword_var
-// string -> tokens
