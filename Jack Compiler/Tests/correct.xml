@@ -4,7 +4,7 @@
 	<symbol>{</symbol>
 	<keyword>function</keyword>
 	<keyword>void</keyword>
-	<identifier>main</identifier>
+	<identifier>Main</identifier>
 	<symbol>(</symbol>
 	<symbol>)</symbol>
 	<symbol>{</symbol>
@@ -13,7 +13,7 @@
 	<symbol>.</symbol>
 	<identifier>printString</identifier>
 	<symbol>(</symbol>
-	<string>Hello, World!</string>
+	<string>HelloWorld</string>
 	<symbol>)</symbol>
 	<symbol>;</symbol>
 	<keyword>return</keyword>

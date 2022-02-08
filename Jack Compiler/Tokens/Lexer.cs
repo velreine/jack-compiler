@@ -90,43 +90,113 @@ namespace Jack_Compiler.Tokens
             List<string> wormdsUwU = new();            
 
             int substringStart = 0;
+            
+            
             for(int i = 0; i < _inputFileContent.Length; i++) {
 
-              char? next = i+1 == _inputFileContent.Length ? null : _inputFileContent[i+1];
-              char current = _inputFileContent[i];
+                char? next = i+1 == _inputFileContent.Length ? null : _inputFileContent[i+1];
+                char current = _inputFileContent[i];
 
-              // If we have a next character.
-              if(next is char nxt) {
-
-                // And the next character is a symbol.
-                if(symbols.ContainsKey(nxt) || nxt == ' '){
-                  // Then all the previous should be looked up in keyword.
-                  // if it does not match with a keyword it must be an identifier.
-
-                  // main()
-                  // startPosition = 0
-                  // endPosition = 3
-                  // foo() main() bar()
-
-                  // identifier = _inputFileContent.Substring(startPosition, endPosition);
-                  var line = _inputFileContent[substringStart..i]; // fUwUck cUwUck
-                  //wormdsUwU.Add(_inputFileContent.Substring(substringStart, i - substringStart + 1));
-                  var a = _inputFileContent.Substring(substringStart, i - substringStart + 1);
-
-                  if(!String.IsNullOrEmpty(a.Trim())){
-                    wormdsUwU.Add(a.Trim());
-                  }
-
-                  // Where the identifier starts will move ahead.
-                  substringStart = i+1;
+                // A whitespace is not considered a "word" so just advance the needle.
+                if(char.IsWhiteSpace(current)) {
+                    continue;
                 }
-              }
-              
+                
+                // Handle symbols.
+                if (symbols.TryGetValue(current, out TokenType symbol)) {
+                    tokens.Add(new Token(symbol));
+                    continue;
+                }
 
+                // Handle string constants.
+                if (current == '"') {
+                    int start = i + 1;
+                    int len = _inputFileContent[start..].IndexOf('"');
+                    if (len == -1) {
+                        System.Console.WriteLine(_inputFileContent[start..]);
+                        throw new System.Exception("unterminated string");
+                    }
+                    string str = _inputFileContent.Substring(start, len);
+                    tokens.Add(new Token(TokenType.STRING_CONSTANT, stringValue: str));
+                    i += len+1;
+                    continue;
+                }
+
+                // Handle integer constants.
+                if (char.IsNumber(current)) {
+                    // int number = current - '0';
+                    int stop = i;
+
+                    // Keep advancing until the next char is no longer a number.
+                    while (stop < _inputFileContent.Length && char.IsNumber(_inputFileContent[stop])) {
+                        stop++;
+                    }
+                    
+                    // Finally parse it as a 16 bit number.
+                    if (short.TryParse(_inputFileContent[i..stop], out short res)) {
+                        tokens.Add(new Token(TokenType.INTEGER_CONSTANT, integerValue: res));
+                    }
+                    i = stop - 1;
+                    continue;
+                }
+
+                // Handle identifiers and keywords.
+                // Identifiers must start with underscore or a letter.
+                // Identifier may contain number, but not begin with it.
+                // _foo4Bar
+                if (char.IsLetter(current) || current == '_') {
+                    int stop = i;
+                    while (stop < _inputFileContent.Length 
+                        && (char.IsNumber(_inputFileContent[stop])
+                        || char.IsLetter(_inputFileContent[stop])
+                        || _inputFileContent[stop] == '_')) {
+                        stop++;
+                    }
+
+                    string keywordOrId = _inputFileContent[i..stop];
+
+                    if (keywords.TryGetValue(keywordOrId, out var keyword)) {
+                        tokens.Add(new Token(keyword));
+                    } else {
+                        tokens.Add(new Token(TokenType.IDENTIFIER, stringValue: keywordOrId));
+                    }
+                    i = stop - 1;
+                    continue;
+                }
+
+                continue;
             }
 
-            foreach(string word in wormdsUwU) {
-              System.Console.WriteLine("Cancer: " + word);
+            //     // If we have a next character.
+            //    // if(next is char nxt) {
+
+            //         // And the next character is a symbol.
+            //         if(symbols.ContainsKey(nxt) || nxt == ' '){
+            //         // Then all the previous should be looked up in keyword.
+            //         // if it does not match with a keyword it must be an identifier.
+
+            //           // main()
+            //           // startPosition = 0
+            //           // endPosition = 3
+            //           // foo() main() bar()
+
+            //         // identifier = _inputFileContent.Substring(startPosition, endPosition);
+            //         var line = _inputFileContent[substringStart..i]; // fUwUck cUwUck
+            //         //wormdsUwU.Add(_inputFileContent.Substring(substringStart, i - substringStart + 1));
+            //         var a = _inputFileContent.Substring(substringStart, i - substringStart + 1);
+
+            //         if(!String.IsNullOrEmpty(a.Trim())){
+            //             wormdsUwU.Add(a.Trim());
+            //         }
+
+            //         // Where the identifier starts will move ahead.
+            //         substringStart = i+1;
+            //     }
+        //     }
+        // }
+
+            foreach(var word in tokens) {
+                System.Console.WriteLine("Cancer: " + word);
             }
 
             return tokens;
