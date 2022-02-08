@@ -1,0 +1,1 @@
+class Program { function void Main() { do Output . printString ( "HelloWorld" ) ; return ; } }

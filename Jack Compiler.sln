@@ -1,5 +1,4 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jack Compiler", "Jack Compiler\Jack Compiler.csproj", "{81365AB1-4B38-40A1-8FC4-4647858A118E}"
 EndProject
 Global

@@ -1,0 +1,23 @@
+<token_list>
+	<keyword>class</keyword>
+	<identifier>Program</identifier>
+	<symbol>{</symbol>
+	<keyword>function</keyword>
+	<keyword>void</keyword>
+	<identifier>Main</identifier>
+	<symbol>(</symbol>
+	<symbol>)</symbol>
+	<symbol>{</symbol>
+	<keyword>do</keyword>
+	<identifier>Output</identifier>
+	<symbol>.</symbol>
+	<identifier>printString</identifier>
+	<symbol>(</symbol>
+	<string>HelloWorld</string>
+	<symbol>)</symbol>
+	<symbol>;</symbol>
+	<keyword>return</keyword>
+	<symbol>;</symbol>
+	<symbol>}</symbol>
+	<symbol>}</symbol>
+</token_list>
