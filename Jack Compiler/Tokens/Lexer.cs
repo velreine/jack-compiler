@@ -164,3 +164,15 @@ namespace Jack_Compiler.Tokens
         }
     }
 }
+
+public class BadJokes{
+    private static List<string> jokes = new(){
+        "Joe?\nJoemama.", "Ligma?\nLigmaballs.",
+        "Fuck Lukas.", "Din mor er så fed, at hendes blodtype er nutella.",
+        "Din mor er så grim, at da hun tilmeldte sig grimhedskonkurrencen, blev hun afvist med svaret 'ingen professionelle.'",
+    };
+    public static string GetJoke(){
+        Random rnd = new Random();
+        return jokes[rnd.Next(0, jokes.Count)];
+    }
+}

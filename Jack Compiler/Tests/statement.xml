@@ -1,0 +1,8 @@
+<let_statement>
+	<var-name>k</var-name>
+	<expression>
+		<term-num>1</term-num>
+		<operator>+</operator>
+		<term-num>3</term-num>
+	</expression>
+</let_statement>

@@ -1,0 +1,21 @@
+// * means 0 or more
+// + means 1 or more
+// ? means 0 or 1
+// https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form
+// things which are quoted 'like this' are terminals
+// things that refer to other things a := expr (expr in this example) are non terminals
+
+
+stmtlist:= stmt*
+stmt    := ifstmt | whilestmt | letstmt | dostmt
+// dostmt  := 'do' expr ';'
+ifstmt  := 'if' '(' expr ')' '{' stmtlist '}'
+whilestmt:= 'while' '(' expr ')' '{' stmtlist '}'
+letstmt := 'let' varName '=' expr ';'
+expr    := term (op term)?
+op      := '+' | '-' | '=' | '>' | '<'
+term    := varname | constant
+constant:= num
+string  := '"' char* '"'
+num     := '-'? digit+
+digit   := '0'..'9'

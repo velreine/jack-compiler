@@ -21,7 +21,8 @@
 	<symbol>.</symbol>
 	<identifier>printString</identifier>
 	<symbol>(</symbol>
-	<string>Sommer Sindsyg</string>
+	<string>Sommer 
+    Sindsyg</string>
 	<symbol>)</symbol>
 	<symbol>;</symbol>
 	<keyword>var</keyword>

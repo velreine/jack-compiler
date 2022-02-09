@@ -25,9 +25,9 @@ public enum TokenType
                                 // grouping operators
     SYMBOL_LEFT_PARENTHESIS,    // (
     SYMBOL_RIGHT_PARENTHESIS,   // )
-    SYMBOL_LEFT_BRACE,    // {
-    SYMBOL_RIGHT_BRACE,   // }
-                          // arrays n shit
+    SYMBOL_LEFT_BRACE,          // {
+    SYMBOL_RIGHT_BRACE,         // }
+                                // arrays n shit
     SYMBOL_LEFT_SQUARE,         // [
     SYMBOL_RIGHT_SQUARE,        // ]
                                 // inter expression operators

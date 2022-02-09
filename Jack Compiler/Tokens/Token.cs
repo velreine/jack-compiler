@@ -1,5 +1,6 @@
 using System.Xml;
 using System.Xml.Linq;
+using Jack_Compiler.Common;
 
 namespace Jack_Compiler.Tokens
 {
@@ -59,30 +60,42 @@ namespace Jack_Compiler.Tokens
       this._integerValue = integerValue;
     }
 
-    public string ToXML()
+    public string ToXML(int indentLevel)
     {
+      string indent = new string('\t', indentLevel);
       if (Type == TokenType.INTEGER_CONSTANT)
       {
-        return $"<int_literal>{IntegerValue}</int_literal>";
+        return indent + $"<int_literal>{IntegerValue}</int_literal>";
       }
       if (Type == TokenType.STRING_CONSTANT)
       {
-        return $"<string>{StringValue}</string>";
+        return indent + $"<string>{StringValue.Replace("\"", "&quot;")}</string>";
       }
       if (Lexer.symbolsToStr.TryGetValue(Type, out char symbol))
       {
-        return $"<symbol>{symbol}</symbol>";
+        return indent + $"<symbol>{symbol}</symbol>";
       }
       if (Lexer.keywordsToStr.TryGetValue(Type, out string keyword))
       {
-        return $"<keyword>{keyword}</keyword>";
+        return indent + $"<keyword>{keyword}</keyword>";
       }
       if (Type == TokenType.IDENTIFIER)
       {
-        return $"<identifier>{StringValue}</identifier>";
+        return indent + $"<identifier>{StringValue}</identifier>";
       }
 
-      throw new System.Exception(/*#ConfusedAF*/"Could not recognise XML gender " + "Could not XML'ize ");
+      // we require the tokenizer to output these tokens as &lt;, &gt;, &quot;, and &amp;,
+      if (Type == TokenType.SYMBOL_AMPERSAND) {
+          return indent + "<symbol>&amp;</symbol>";
+      }
+      if (Type == TokenType.SYMBOL_LESS_THAN) {
+          return indent + "<symbol>&lt;</symbol>";
+      }
+      if (Type == TokenType.SYMBOL_GREATER_THAN) {
+          return indent + "<symbol>&gt;</symbol>";
+      }
+
+      throw new System.Exception(/*#ConfusedAF*/"Could not recognise XML gender uwu " + "Could not XML'ize ");
     }
   }
 }
