@@ -1,0 +1,17 @@
+class Program {
+
+  function void main() {
+
+    do Output.printString("Sindsyg");
+    do Output.printString("Sommer Sindsyg");
+
+    // Declarations.
+    var int x;
+    var int y;
+
+    // Initializers.
+    let x = 2;
+    let y = 4;
+
+  }
+}

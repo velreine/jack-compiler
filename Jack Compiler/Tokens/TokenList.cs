@@ -11,7 +11,6 @@ namespace Jack_Compiler.Tokens {
             foreach (var token in this)
             {
                 sb.AppendLine("\t" + token.ToXML());
-                // Console.WriteLine(token.ToXML());
             }
 
             sb.AppendLine("</token_list>");

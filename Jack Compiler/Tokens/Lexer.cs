@@ -59,38 +59,17 @@ namespace Jack_Compiler.Tokens
 
         private string _inputFileContent { get; }
         private List<Token> tokens { get; } = new();
-        // private int _position = 0;
 
         public Lexer(string inputFileContent)
         {
             _inputFileContent = inputFileContent;
         }
 
-        // private bool IsAtEnd() {
-        //     return _position >= _inputFileContent.Length;
-        // }
-
-        // private char GetChar() {
-        //     return _inputFileContent[_position];
-        // }
-
-        // private void SkipWhitespace() {
-        //     while (!IsAtEnd() && char.IsWhiteSpace(GetChar())) {
-        //         _position++;
-        //     }
-        // }
-
-        // private Token GetToken() {
-            
-        // }
-
         public TokenList LexTokens() {
             TokenList tokens = new();
 
             List<string> wormdsUwU = new();            
 
-            int substringStart = 0;
-            
             
             for(int i = 0; i < _inputFileContent.Length; i++) {
 
@@ -99,6 +78,16 @@ namespace Jack_Compiler.Tokens
 
                 // A whitespace is not considered a "word" so just advance the needle.
                 if(char.IsWhiteSpace(current)) {
+                    continue;
+                }
+
+                // If there is a comment, skip to next line.
+                if (current == '/' && next == '/') {
+                    int lineBreakIdx = _inputFileContent[i..].IndexOf("\n");
+                    if (lineBreakIdx == -1) {
+                        break;
+                    }
+                    i += lineBreakIdx + 1;
                     continue;
                 }
                 
@@ -167,87 +156,10 @@ namespace Jack_Compiler.Tokens
                 continue;
             }
 
-            //     // If we have a next character.
-            //    // if(next is char nxt) {
-
-            //         // And the next character is a symbol.
-            //         if(symbols.ContainsKey(nxt) || nxt == ' '){
-            //         // Then all the previous should be looked up in keyword.
-            //         // if it does not match with a keyword it must be an identifier.
-
-            //           // main()
-            //           // startPosition = 0
-            //           // endPosition = 3
-            //           // foo() main() bar()
-
-            //         // identifier = _inputFileContent.Substring(startPosition, endPosition);
-            //         var line = _inputFileContent[substringStart..i]; // fUwUck cUwUck
-            //         //wormdsUwU.Add(_inputFileContent.Substring(substringStart, i - substringStart + 1));
-            //         var a = _inputFileContent.Substring(substringStart, i - substringStart + 1);
-
-            //         if(!String.IsNullOrEmpty(a.Trim())){
-            //             wormdsUwU.Add(a.Trim());
-            //         }
-
-            //         // Where the identifier starts will move ahead.
-            //         substringStart = i+1;
-            //     }
-        //     }
-        // }
-
             foreach(var word in tokens) {
                 System.Console.WriteLine("Cancer: " + word);
             }
 
-            return tokens;
-
-            // dead zombie code airbow or below =)))))
-
-            string[] words = _inputFileContent.Split(' ');
-
-            foreach(var word in words) {
-                Console.WriteLine("LEX: " + word);
-                // word can be symbol, keyword, int, string, identifier
-
-                // Check if word is a symbol.
-                if (symbols.TryGetValue(word[0], out var tokenType)) {
-                    tokens.Add(new Token(tokenType));
-                    continue;
-                } 
-                
-                // Check if word is a keyword.
-                if (keywords.TryGetValue(word, out tokenType)) {
-                    tokens.Add(new Token(tokenType));
-                    continue;
-                }
-                
-                // Check if integer constant
-                if (short.TryParse(word, out short res)) {
-                    tokens.Add(new Token(TokenType.INTEGER_CONSTANT, integerValue: res));
-                    continue;
-                }
-                
-                // Check if string constant
-                if (word.StartsWith('"') && word.EndsWith('"')) {
-                    tokens.Add(new Token(TokenType.STRING_CONSTANT, stringValue: word[1..^1]));
-                    continue;
-                }
-                
-                // Check if identifier
-                // A valid identifier starts with a letter or an underscore.
-                // It can contain numbers, but must not start with it.
-                if (char.IsLetter(word[0]) || word.StartsWith('_')) {
-                    if (word.All(c => !char.IsLetter(c) && !char.IsNumber(c) && c != '_')) {
-                        throw new System.Exception($"Identifier not allowed only [a-zA-Z0-9_] allowed, got {word}");
-                    }
-                    tokens.Add(new Token(TokenType.IDENTIFIER, stringValue: word));
-                    continue;
-                }
-
-                // If the token is unhandled throw an exception.
-                throw new System.Exception($"Got unexpected token: {word}");
-            }
-            
             return tokens;
         }
     }

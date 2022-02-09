@@ -1,0 +1,21 @@
+class Program {
+
+  function void main() {
+    var int two;
+    var int four;
+    var int one;
+    var int quick_math;
+    var int multiply;
+    let two = 2;
+    let four = 4;
+    let one = 1;
+
+    if((two + two) = four){
+        let quick_math = four - one;
+    }
+
+    let multiply = Math.multiply(quick_math, 2);
+    let starmul = quick_math * 2;
+    do Output.printString(multiply);
+  }
+}

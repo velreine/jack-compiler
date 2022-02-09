@@ -1,0 +1,47 @@
+<token_list>
+	<keyword>class</keyword>
+	<identifier>Program</identifier>
+	<symbol>{</symbol>
+	<keyword>function</keyword>
+	<keyword>void</keyword>
+	<identifier>main</identifier>
+	<symbol>(</symbol>
+	<symbol>)</symbol>
+	<symbol>{</symbol>
+	<keyword>do</keyword>
+	<identifier>Output</identifier>
+	<symbol>.</symbol>
+	<identifier>printString</identifier>
+	<symbol>(</symbol>
+	<string>Sindsyg</string>
+	<symbol>)</symbol>
+	<symbol>;</symbol>
+	<keyword>do</keyword>
+	<identifier>Output</identifier>
+	<symbol>.</symbol>
+	<identifier>printString</identifier>
+	<symbol>(</symbol>
+	<string>Sommer Sindsyg</string>
+	<symbol>)</symbol>
+	<symbol>;</symbol>
+	<keyword>var</keyword>
+	<keyword>int</keyword>
+	<identifier>x</identifier>
+	<symbol>;</symbol>
+	<keyword>var</keyword>
+	<keyword>int</keyword>
+	<identifier>y</identifier>
+	<symbol>;</symbol>
+	<keyword>let</keyword>
+	<identifier>x</identifier>
+	<symbol>=</symbol>
+	<int_literal>2</int_literal>
+	<symbol>;</symbol>
+	<keyword>let</keyword>
+	<identifier>y</identifier>
+	<symbol>=</symbol>
+	<int_literal>4</int_literal>
+	<symbol>;</symbol>
+	<symbol>}</symbol>
+	<symbol>}</symbol>
+</token_list>
