@@ -1,0 +1,18 @@
+function void fuckMigHaardt(Papa argOne, Mommy argTwo) {
+  if(1){
+    let a = 1 + b;
+    let b = b + 2;
+    if(1){
+        while(0){
+            if(1){
+                let c = b;
+            }
+        }
+        let d = c;
+    }
+    let e = a + d;
+  }
+  let argThree = e;
+  return argThree;
+}
+

@@ -7,6 +7,7 @@ namespace Jack_Compiler.Tokens
   public class Token : ICanBeExpressedAsXML
   {
     public TokenType Type { get; init; }
+    public int LineNumber { get; init; }
 
     private string _stringValue { get; init; }
     public string StringValue
@@ -39,9 +40,10 @@ namespace Jack_Compiler.Tokens
       }
     }
 
-    public Token(TokenType type, string stringValue = null, int? integerValue = null)
+    public Token(TokenType type, int lineNumber, string stringValue = null, int? integerValue = null)
     {
       this.Type = type;
+      this.LineNumber = lineNumber;
 
       if (type != TokenType.IDENTIFIER && type != TokenType.STRING_CONSTANT)
       {
@@ -65,7 +67,7 @@ namespace Jack_Compiler.Tokens
       string indent = new string('\t', indentLevel);
       if (Type == TokenType.INTEGER_CONSTANT)
       {
-        return indent + $"<int_literal>{IntegerValue}</int_literal>";
+        return indent + $"<int-literal>{IntegerValue}</int-literal>";
       }
       if (Type == TokenType.STRING_CONSTANT)
       {

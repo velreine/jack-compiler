@@ -68,9 +68,10 @@ namespace Jack_Compiler.Tokens
         public TokenList LexTokens() {
             TokenList tokens = new();
 
-            List<string> wormdsUwU = new();            
+            List<string> wormdsUwU = new();// old code, i cannot remember what it does, remove with caution
 
-            
+            int lines = 1;
+
             for(int i = 0; i < _inputFileContent.Length; i++) {
 
                 char? next = i+1 == _inputFileContent.Length ? null : _inputFileContent[i+1];
@@ -78,6 +79,9 @@ namespace Jack_Compiler.Tokens
 
                 // A whitespace is not considered a "word" so just advance the needle.
                 if(char.IsWhiteSpace(current)) {
+                    if (current == '\n') {
+                        lines++;
+                    }
                     continue;
                 }
 
@@ -93,7 +97,7 @@ namespace Jack_Compiler.Tokens
                 
                 // Handle symbols.
                 if (symbols.TryGetValue(current, out TokenType symbol)) {
-                    tokens.Add(new Token(symbol));
+                    tokens.Add(new Token(symbol, lines));
                     continue;
                 }
 
@@ -106,7 +110,7 @@ namespace Jack_Compiler.Tokens
                         throw new System.Exception("unterminated string");
                     }
                     string str = _inputFileContent.Substring(start, len);
-                    tokens.Add(new Token(TokenType.STRING_CONSTANT, stringValue: str));
+                    tokens.Add(new Token(TokenType.STRING_CONSTANT, lines, stringValue: str));
                     i += len+1;
                     continue;
                 }
@@ -123,7 +127,7 @@ namespace Jack_Compiler.Tokens
                     
                     // Finally parse it as a 16 bit number.
                     if (short.TryParse(_inputFileContent[i..stop], out short res)) {
-                        tokens.Add(new Token(TokenType.INTEGER_CONSTANT, integerValue: res));
+                        tokens.Add(new Token(TokenType.INTEGER_CONSTANT, lines, integerValue: res));
                     }
                     i = stop - 1;
                     continue;
@@ -145,9 +149,9 @@ namespace Jack_Compiler.Tokens
                     string keywordOrId = _inputFileContent[i..stop];
 
                     if (keywords.TryGetValue(keywordOrId, out var keyword)) {
-                        tokens.Add(new Token(keyword));
+                        tokens.Add(new Token(keyword, lines));
                     } else {
-                        tokens.Add(new Token(TokenType.IDENTIFIER, stringValue: keywordOrId));
+                        tokens.Add(new Token(TokenType.IDENTIFIER, lines, stringValue: keywordOrId));
                     }
                     i = stop - 1;
                     continue;
@@ -156,8 +160,8 @@ namespace Jack_Compiler.Tokens
                 continue;
             }
 
-            foreach(var word in tokens) {
-                System.Console.WriteLine("Cancer: " + word);
+            foreach(var token in tokens) {
+                System.Console.WriteLine("Lexed: " + token.Type.ToString());
             }
 
             return tokens;
@@ -167,9 +171,20 @@ namespace Jack_Compiler.Tokens
 
 public class BadJokes{
     private static List<string> jokes = new(){
-        "Joe?\nJoemama.", "Ligma?\nLigmaballs.",
-        "Fuck Lukas.", "Din mor er så fed, at hendes blodtype er nutella.",
+        "Joe?\nJoemama.", "Ligma?\nLigmaballs.", "Camilla kan godt lide php.",
+        "Fuck Lukas.", "Fuck Benjamin.", "Fuck Nicklas.", "Fuck Nicky.",
+        "Din mor er så fed, at hendes blodtype er nutella.",
+        "A man walked into a bar.\nAw.",
         "Din mor er så grim, at da hun tilmeldte sig grimhedskonkurrencen, blev hun afvist med svaret 'ingen professionelle.'",
+        "What's orange and tastes like an orange?\nAn orange.",
+        "What's red and smells like blue paint?\nRed paint.",
+        "What is green and has wheels?\nGrass, I lied about the wheels.",
+        "How do you make a plumber cry?\nMurder his family.",
+        "What is red and bad for your teeth?\nBricks.",
+        "What is worse?",
+        "Wanna hear half a joke?\nWhy did the squr",
+        "A horse walks into a bar.\nSeveral of the patrons quickly get up and leave, realizing the potential danger in the situation.",
+        "What did the cow say to the cook after making the cow a burger?\nNothing, cows can't talk.",
     };
     public static string GetJoke(){
         Random rnd = new Random();

@@ -4,6 +4,7 @@
 // https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form
 // things which are quoted 'like this' are terminals
 // things that refer to other things a := expr (expr in this example) are non terminals
+// Synonym rolls, just like Grammar used to make.
 
 
 stmtlist:= stmt*

@@ -12,12 +12,11 @@ public class StatementList : List<Statement>, ICanBeExpressedAsXML {
         
         foreach (var item in this)
         {
-            sb.AppendLine(item.ToXML(indentLevel + 1));
+            sb.Append(item.ToXML(indentLevel + 1));
         }
         
         sb.Append(indent);
         sb.AppendLine("</statement-list>");
         return sb.ToString();
     }
-
 }

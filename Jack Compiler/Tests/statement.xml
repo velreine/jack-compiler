@@ -1,8 +1,15 @@
-<let_statement>
-	<var-name>k</var-name>
-	<expression>
-		<term-num>1</term-num>
-		<operator>+</operator>
-		<term-num>3</term-num>
-	</expression>
-</let_statement>
+<token-list>
+	<keyword>let</keyword>
+	<identifier>k</identifier>
+	<symbol>=</symbol>
+	<int-literal>1</int-literal>
+	<symbol>+</symbol>
+	<int-literal>3</int-literal>
+	<symbol>;</symbol>
+	<symbol>/</symbol>
+	<keyword>if</keyword>
+	<symbol>(</symbol>
+	<identifier>k</identifier>
+	<symbol>)</symbol>
+	<symbol>{</symbol>
+</token-list>

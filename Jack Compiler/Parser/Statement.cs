@@ -7,6 +7,8 @@ public enum StatementType
   Let,
   While,
   If,
+  ReturnNothing,
+  ReturnSomething,
 }
 
 // This is based
@@ -39,11 +41,24 @@ public class Statement : ICanBeExpressedAsXML
     };
   }
 
-  // This is wrong, but dont mind it
+  // This is wrong, but don't mind it
   public static Statement LetStatement(string varName, Expr assignmentExpression) {
     return new Statement {
         Type = StatementType.Let,
         VarName = varName,
+        Expression = assignmentExpression,
+    };
+  }
+
+  public static Statement ReturnStatement() {
+    return new Statement {
+        Type = StatementType.ReturnNothing,
+    };
+  }
+
+  public static Statement ReturnStatementExpression(Expr assignmentExpression) {
+    return new Statement {
+        Type = StatementType.ReturnSomething,
         Expression = assignmentExpression,
     };
   }
@@ -56,7 +71,7 @@ public class Statement : ICanBeExpressedAsXML
     if (this.Type == StatementType.Let)
     {
         sb.Append(indentComp);
-        sb.AppendLine("<let_statement>");
+        sb.AppendLine("<let-statement>");
 
         // let varName = Expression.
         sb.AppendLine(new string('\t', indentLevel + 1) + $"<var-name>{VarName}</var-name>");
@@ -64,33 +79,48 @@ public class Statement : ICanBeExpressedAsXML
         sb.Append(Expression.ToXML(indentLevel + 1));
 
         sb.Append(indentComp);
-        sb.AppendLine("</let_statement>");
+        sb.AppendLine("</let-statement>");
     }
 
     if (this.Type == StatementType.While)
     {
         sb.Append(indentComp);
-        sb.AppendLine("<while_statement>");
+        sb.AppendLine("<while-statement>");
 
         sb.Append(Expression.ToXML(indentLevel + 1));
 
         sb.Append(Statements.ToXML(indentLevel + 1));
 
         sb.Append(indentComp);
-        sb.AppendLine("</while_statement>");
+        sb.AppendLine("</while-statement>");
     }
 
     if (this.Type == StatementType.If)
     {
         sb.Append(indentComp);
-        sb.AppendLine("<if_statement>");
+        sb.AppendLine("<if-statement>");
 
         sb.Append(Expression.ToXML(indentLevel + 1));
 
         sb.Append(Statements.ToXML(indentLevel + 1));
 
         sb.Append(indentComp);
-        sb.AppendLine("</if_statement>");
+        sb.AppendLine("</if-statement>");
+    }
+
+    if (this.Type == StatementType.ReturnNothing) {
+        sb.Append(indentComp);
+        sb.AppendLine("<return/>");
+    }
+
+    if (this.Type == StatementType.ReturnSomething) {
+        sb.Append(indentComp);
+        sb.AppendLine("<return>");
+
+        sb.Append(Expression.ToXML(indentLevel + 1));
+
+        sb.Append(indentComp);
+        sb.AppendLine("</return>");
     }
 
     return sb.ToString();

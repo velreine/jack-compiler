@@ -17,8 +17,9 @@ namespace Jack_Compiler
             // "hello-world-easy",
             // "hello-world-hard",//NoobSlayer69   thanks
             // "expr-test",
-            "statement",
-            //BadJokes.GetJoke(),
+            //"statement",
+            "wrong",
+            BadJokes.GetJoke(),
         };
 
       foreach (var shit in fileNames)
@@ -29,11 +30,12 @@ namespace Jack_Compiler
           continue;
         }
         var fqFileName__ = @"./../../../Tests/" + shit + ".xml";
+        var fqFileNameAst = @"./../../../Tests/" + shit + ".ast.xml";
         var file__ = File.ReadAllText(@"./../../../Tests/" + shit + ".jack");
-        var fileout__ = fqFileName__;
         var tokens = (new Lexer(file__)).LexTokens();
+        File.WriteAllText(fqFileName__, tokens.ToXML(0));
         var jackAst = (new Parser(tokens)).ParseTokens();
-        File.WriteAllText(fileout__, jackAst.ToXML(0));
+        File.WriteAllText(fqFileNameAst, jackAst.ToXML(0));
       }
 
       // var fileName = Console.ReadLine();
@@ -66,7 +68,6 @@ namespace Jack_Compiler
       //  █ ███ █ █ ▄ ▀▄▄▀███▀▀  ██
       //  █ ▀▀▀ █ ▄█▄ ▀▀▄▄ ▀▄▄█▀███
       //  ▀▀▀▀▀▀▀ ▀▀  ▀▀▀ ▀ ▀  ▀  ▀
-
     }
   }
 }
