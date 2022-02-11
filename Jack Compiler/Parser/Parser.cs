@@ -2,6 +2,7 @@ using Jack_Compiler.Tokens;
 using System.Linq;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 public class Parser
 {
@@ -117,9 +118,9 @@ public class Parser
 
     ExpectToken(TokenType.SYMBOL_RIGHT_PARENTHESIS);
 
-    var statements = ParseBlock();
+    var block = ParseStatementBlock();
 
-    return Statement.IfStatement(expr, statements);
+    return Statement.IfStatement(expr, block);
   }
 
   // nicky skrive noget smart her
@@ -133,9 +134,9 @@ public class Parser
 
     ExpectToken(TokenType.SYMBOL_RIGHT_PARENTHESIS);
 
-    var statements = ParseBlock();
+    var block = ParseStatementBlock();
 
-    return Statement.WhileStatement(expr, statements);
+    return Statement.WhileStatement(expr, block);
   }
 
   private Statement ParseStatement()
@@ -154,6 +155,55 @@ public class Parser
         return ParseReturnStatement();
       default:
         throw new System.Exception("Could not parse statement, expected: let, if or while. Got: " + t.Type.ToString());
+    }
+  }
+
+  // var's should only be found in methods.
+  // var int foobar;
+  private VariableDeclaration ParseVarDeclaration()
+  {
+    ExpectToken(TokenType.KEYWORD_VAR);
+    var argType = GetNextToken();
+    var argName = ExpectToken(TokenType.IDENTIFIER);
+    ExpectToken(TokenType.SYMBOL_SEMI_COLON);
+    if (argType.Type == TokenType.IDENTIFIER)
+    {
+      return VariableDeclaration.ClassVar(argName.StringValue, argType.StringValue, VariableType.Var);
+    }
+    else
+    {
+      return VariableDeclaration.Primitive(argName.StringValue, typeMap[argType.Type], VariableType.Var);
+    }
+  }
+
+  // class Program { field int foobar; static int Barbuzz;  }
+  private VariableDeclaration ParseFieldDeclaration()
+  {
+    ExpectToken(TokenType.KEYWORD_FIELD);
+    var argType = GetNextToken();
+    var argName = ExpectToken(TokenType.IDENTIFIER);
+    if (argType.Type == TokenType.IDENTIFIER)
+    {
+      return VariableDeclaration.ClassVar(argName.StringValue, argType.StringValue, VariableType.Field);
+    }
+    else
+    {
+      return VariableDeclaration.Primitive(argName.StringValue, typeMap[argType.Type], VariableType.Field);
+    }
+  }
+
+  private VariableDeclaration ParseStaticDeclaration()
+  {
+    ExpectToken(TokenType.KEYWORD_STATIC);
+    var argType = GetNextToken();
+    var argName = ExpectToken(TokenType.IDENTIFIER);
+    if (argType.Type == TokenType.IDENTIFIER)
+    {
+      return VariableDeclaration.ClassVar(argName.StringValue, argType.StringValue, VariableType.Static);
+    }
+    else
+    {
+      return VariableDeclaration.Primitive(argName.StringValue, typeMap[argType.Type], VariableType.Static);
     }
   }
 
@@ -183,11 +233,57 @@ public class Parser
     return Statement.ReturnStatement();
   }
 
-  private StatementList ParseBlock()
+  private (StatementList statements, VariableDeclarationList variableDeclarations) ParseClassBlock()
   {
     ExpectToken(TokenType.SYMBOL_LEFT_BRACE);
 
     var stmts = new StatementList();
+    var variableDeclarations = new VariableDeclarationList();
+
+    while (CheckToken(TokenType.KEYWORD_VAR))
+    {
+      variableDeclarations.Add(ParseVarDeclaration());
+    }
+    while (HasNextToken() && !CheckToken(TokenType.SYMBOL_RIGHT_BRACE))
+    {
+      stmts.Add(ParseStatement());
+    }
+
+    ExpectToken(TokenType.SYMBOL_RIGHT_BRACE);
+    return (stmts, variableDeclarations);
+  }
+
+  private (StatementList statements, VariableDeclarationList variableDeclarations) ParseFunctionBlock()
+  {
+    ExpectToken(TokenType.SYMBOL_LEFT_BRACE);
+
+    var stmts = new StatementList();
+    var variableDeclarations = new VariableDeclarationList();
+
+    while (CheckToken(TokenType.KEYWORD_VAR))
+    {
+      variableDeclarations.Add(ParseVarDeclaration());
+    }
+    while (HasNextToken() && !CheckToken(TokenType.SYMBOL_RIGHT_BRACE))
+    {
+      stmts.Add(ParseStatement());
+    }
+
+    ExpectToken(TokenType.SYMBOL_RIGHT_BRACE);
+    return (stmts, variableDeclarations);
+  }
+
+  private StatementList ParseStatementBlock()
+  {
+    ExpectToken(TokenType.SYMBOL_LEFT_BRACE);
+
+    var stmts = new StatementList();
+    var variableDeclarations = new VariableDeclarationList();
+
+    while (CheckToken(TokenType.KEYWORD_VAR))
+    {
+      variableDeclarations.Add(ParseVarDeclaration());
+    }
     while (HasNextToken() && !CheckToken(TokenType.SYMBOL_RIGHT_BRACE))
     {
       stmts.Add(ParseStatement());
@@ -196,6 +292,7 @@ public class Parser
     ExpectToken(TokenType.SYMBOL_RIGHT_BRACE);
     return stmts;
   }
+  
 
   private StatementList ParseStatementList()
   {
@@ -208,21 +305,34 @@ public class Parser
     return stmts;
   }
 
+  private readonly static ImmutableDictionary<TokenType, DataType> typeMap = (new Dictionary<TokenType, DataType>() {
+    {TokenType.KEYWORD_BOOLEAN, DataType.BOOLEAN},
+    {TokenType.KEYWORD_CHAR, DataType.CHAR},
+    {TokenType.KEYWORD_INT, DataType.INTEGER},
+    {TokenType.KEYWORD_VOID, DataType.VOID},
+    {TokenType.IDENTIFIER, DataType.CLASS_REF}
+  }).ToImmutableDictionary();
+
+  private FunctionArgument ParseFunctionArgument()
+  {
+    var argType = GetNextToken();
+    var argName = ExpectToken(TokenType.IDENTIFIER);
+    if (argType.Type == TokenType.IDENTIFIER)
+    {
+      return FunctionArgument.ClassArg(argName.StringValue, argType.StringValue);
+    }
+    else
+    {
+      return FunctionArgument.Primitive(argName.StringValue, typeMap[argType.Type]);
+    }
+  }
+
   private FunctionDeclaration ParseFunction()
   {
     ExpectToken(TokenType.KEYWORD_FUNCTION);
 
-    // Return type comes first.
-    var t = new Dictionary<TokenType, DataType>() {
-      {TokenType.KEYWORD_BOOLEAN, DataType.BOOLEAN},
-      {TokenType.KEYWORD_CHAR, DataType.CHAR},
-      {TokenType.KEYWORD_INT, DataType.INTEGER},
-      {TokenType.KEYWORD_VOID, DataType.VOID},
-      {TokenType.IDENTIFIER, DataType.CLASS_REF}
-    };
-
     var returnTypeToken = GetNextToken();
-    if (!t.ContainsKey(returnTypeToken.Type))
+    if (!typeMap.ContainsKey(returnTypeToken.Type))
     {
       throw new System.Exception("Unsupported return type for function: " + returnTypeToken.Type.ToString());
     }
@@ -233,50 +343,43 @@ public class Parser
     // function int foo() { ... }
     ExpectToken(TokenType.SYMBOL_LEFT_PARENTHESIS);
 
-    // TODO: Parse args.
     List<FunctionArgument> args = new();
-    while (!CheckToken(TokenType.SYMBOL_RIGHT_PARENTHESIS))
+    if (!CheckToken(TokenType.SYMBOL_RIGHT_PARENTHESIS))
     {
-      var argType = GetNextToken();
-      var argName = ExpectToken(TokenType.IDENTIFIER);
-      if (argType.Type == TokenType.IDENTIFIER)
-      {
-        args.Add(FunctionArgument.ClassArg(argName.StringValue, argType.StringValue));
-      }
-      else
-      {
-        args.Add(FunctionArgument.Primitive(argName.StringValue, t[argType.Type]));
-      }
-      if (CheckToken(TokenType.SYMBOL_COMMA))
+      args.Add(ParseFunctionArgument());
+      while (CheckToken(TokenType.SYMBOL_COMMA))
       {
         ExpectToken(TokenType.SYMBOL_COMMA);
+        args.Add(ParseFunctionArgument());
       }
-      else if (!CheckToken(TokenType.SYMBOL_RIGHT_PARENTHESIS))
-      {
-        throw new System.Exception("fuck you");
-      }
-
     }
 
     ExpectToken(TokenType.SYMBOL_RIGHT_PARENTHESIS);
 
-    var statements = ParseBlock();
+    var block = ParseFunctionBlock();
 
     if (returnTypeToken.Type == TokenType.IDENTIFIER)
     {
-      return FunctionDeclaration.ClassReturner(identifier.StringValue, returnTypeToken.StringValue, statements, args.ToArray());
+      return FunctionDeclaration.ClassReturner(identifier.StringValue, returnTypeToken.StringValue, block.statements, block.variableDeclarations, args.ToArray());
     }
     else
     {
-      t.TryGetValue(returnTypeToken.Type, out var returnType);
-      return FunctionDeclaration.PrimitiveReturner(identifier.StringValue, returnType, statements, args.ToArray());
+      typeMap.TryGetValue(returnTypeToken.Type, out var returnType);
+      return FunctionDeclaration.PrimitiveReturner(identifier.StringValue, returnType, block.statements, block.variableDeclarations, args.ToArray());
     }
+  }
+
+  private ClassDeclaration ParseClass(){
+    ExpectToken(TokenType.KEYWORD_CLASS);
+    var className = ExpectToken(TokenType.IDENTIFIER);
+    var classblock = ParseClassBlock();
+    return null;
   }
 
   public /*JackAST*/FunctionDeclaration ParseTokens()
   {
 
-    // sindsygt nu R vi done.
+    // sindsygt nu R vi done.4
     return ParseFunction();
   }
 }

@@ -24,7 +24,6 @@ namespace Jack_Compiler.Tokens
       }
     }
 
-
     private int? _integerValue { get; init; }
     public int? IntegerValue
     {

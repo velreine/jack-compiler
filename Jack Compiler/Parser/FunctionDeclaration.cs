@@ -2,100 +2,13 @@ using System;
 using Jack_Compiler.Common;
 using System.Text;
 
-public class FunctionArgument : ICanBeExpressedAsXML
-{
-
-  public string Name { get; init; }
-  private string _typeClassName { get; init; }
-
-  public string TypeClassName
-  {
-    get
-    {
-      if (this.DataType != DataType.CLASS_REF)
-      {
-        throw new System.Exception("Cannot access ReturnTypeClassName when ReturnType is not CLASS_REF.");
-      }
-
-      return _typeClassName;
-
-    }
-    init { _typeClassName = value; }
-  } // only when DataType == CLASS_REF.
-  public DataType DataType { get; init; }
-
-  public static FunctionArgument Primitive(string name, DataType dataType)
-  {
-
-    // function void doSomething(int a, void b)  <<<< here void does not make sense.
-    if (dataType == DataType.VOID)
-    {
-      throw new System.Exception("VOID is not a valid type for a function argument.");
-    }
-
-    // For arguments that are of primitive data types.
-    return new FunctionArgument()
-    {
-      Name = name,
-      DataType = dataType
-    };
-  }
-
-  public static FunctionArgument ClassArg(string name, string typeClassName)
-  {
-    // For arguments that are of custom/objects data types.
-    return new FunctionArgument()
-    {
-      Name = name,
-      TypeClassName = typeClassName,
-      DataType = DataType.CLASS_REF
-    };
-  }
-
-  public string ToXML(int indentLevel)
-  {
-    string indent = new string('\t', indentLevel);
-    string indentMore = new string('\t', indentLevel + 1);
-    StringBuilder sb = new StringBuilder();
-    sb.Append(indent);
-    sb.AppendLine("<argument>");
-
-    if (DataType == DataType.CLASS_REF)
-    {
-      sb.AppendLine(indentMore + $"<type>{TypeClassName}</type>");
-    }
-    else
-    {
-      sb.AppendLine(indentMore + $"<type>{DataType.ToString()}</type>");
-    }
-
-    sb.AppendLine(indentMore + $"<var-name>{Name}</var-name>");
-
-    sb.Append(indent);
-    sb.AppendLine("</argument>");
-
-    return sb.ToString();
-  }
-}
-
-public enum DataType
-{
-  // Primitive return types.
-  INTEGER,
-  BOOLEAN,
-  STRING,
-  CHAR,
-
-  // Special.
-  VOID, // when the function does not return anything, not valid as parameter
-  CLASS_REF, // When the returned type is an object of another class.
-}
-
 public class FunctionDeclaration : ICanBeExpressedAsXML
 {
   public string Name { get; init; } // function void >>>name<<< (int arg1, int arg2)
   public FunctionArgument[] Arguments { get; init; } // function void name >>>(int arg1, int arg2)<<<
   public DataType ReturnType { get; init; } // function >>>void<<< name (int arg1, int arg2)
+
+  public VariableDeclarationList Variables {get; init; } // function void name (int arg1, int arg2) { >>>...varDeclarations<<< ...Statements}
   public StatementList Statements { get; init; } // function void name (int arg1, int arg2) { >>>...Statements<<<a }
 
   private string _returnTypeClassName { get; init; }
@@ -124,19 +37,20 @@ public class FunctionDeclaration : ICanBeExpressedAsXML
   }
 
   // returning function without parameters
-  public static FunctionDeclaration PrimitiveReturner(string name, DataType returns, StatementList statements, FunctionArgument[] arguments)
+  public static FunctionDeclaration PrimitiveReturner(string name, DataType returns, StatementList statements, VariableDeclarationList variables, FunctionArgument[] arguments)
   {
     return new FunctionDeclaration()
     {
       Name = name,
       ReturnType = returns,
       Statements = statements,
+      Variables = variables,
       Arguments = arguments
     };
   }
 
   // if returning pointer type/object type without parameters
-  public static FunctionDeclaration ClassReturner(string name, string returnTypeClassName, StatementList statements, FunctionArgument[] arguments)
+  public static FunctionDeclaration ClassReturner(string name, string returnTypeClassName, StatementList statements, VariableDeclarationList variables, FunctionArgument[] arguments)
   {
     return new FunctionDeclaration()
     {
@@ -144,6 +58,7 @@ public class FunctionDeclaration : ICanBeExpressedAsXML
       ReturnType = DataType.CLASS_REF,
       ReturnTypeClassName = returnTypeClassName,
       Statements = statements,
+      Variables = variables,
       Arguments = arguments
     };
   }
@@ -182,6 +97,8 @@ public class FunctionDeclaration : ICanBeExpressedAsXML
       sb.Append(indent2);
       sb.AppendLine($"</argument-list>");
     }
+
+    sb.Append(Variables.ToXML(indentLevel + 1));
 
     sb.Append(Statements.ToXML(indentLevel + 1));
 

@@ -68,8 +68,8 @@ public class Statement : ICanBeExpressedAsXML
     string indentComp = new string('\t', indentLevel);
     var sb = new StringBuilder();
 
-    if (this.Type == StatementType.Let)
-    {
+    switch (this.Type) {
+      case StatementType.Let:
         sb.Append(indentComp);
         sb.AppendLine("<let-statement>");
 
@@ -80,10 +80,8 @@ public class Statement : ICanBeExpressedAsXML
 
         sb.Append(indentComp);
         sb.AppendLine("</let-statement>");
-    }
-
-    if (this.Type == StatementType.While)
-    {
+        break;
+      case StatementType.While:
         sb.Append(indentComp);
         sb.AppendLine("<while-statement>");
 
@@ -93,10 +91,8 @@ public class Statement : ICanBeExpressedAsXML
 
         sb.Append(indentComp);
         sb.AppendLine("</while-statement>");
-    }
-
-    if (this.Type == StatementType.If)
-    {
+        break;
+      case StatementType.If:
         sb.Append(indentComp);
         sb.AppendLine("<if-statement>");
 
@@ -106,14 +102,12 @@ public class Statement : ICanBeExpressedAsXML
 
         sb.Append(indentComp);
         sb.AppendLine("</if-statement>");
-    }
-
-    if (this.Type == StatementType.ReturnNothing) {
+        break;
+      case StatementType.ReturnNothing:
         sb.Append(indentComp);
         sb.AppendLine("<return/>");
-    }
-
-    if (this.Type == StatementType.ReturnSomething) {
+        break;
+      case StatementType.ReturnSomething:
         sb.Append(indentComp);
         sb.AppendLine("<return>");
 
@@ -121,6 +115,7 @@ public class Statement : ICanBeExpressedAsXML
 
         sb.Append(indentComp);
         sb.AppendLine("</return>");
+        break;
     }
 
     return sb.ToString();
