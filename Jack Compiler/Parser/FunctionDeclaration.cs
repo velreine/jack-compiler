@@ -2,11 +2,19 @@ using System;
 using Jack_Compiler.Common;
 using System.Text;
 
+public enum FunctionType {
+  Method,
+  Function,
+  Constructor
+}
+
 public class FunctionDeclaration : ICanBeExpressedAsXML
 {
   public string Name { get; init; } // function void >>>name<<< (int arg1, int arg2)
   public FunctionArgument[] Arguments { get; init; } // function void name >>>(int arg1, int arg2)<<<
   public DataType ReturnType { get; init; } // function >>>void<<< name (int arg1, int arg2)
+
+  public FunctionType Type { get; init; } // >>>function|method|constructor<<< void name (int arg1, int arg2)
 
   public VariableDeclarationList Variables {get; init; } // function void name (int arg1, int arg2) { >>>...varDeclarations<<< ...Statements}
   public StatementList Statements { get; init; } // function void name (int arg1, int arg2) { >>>...Statements<<<a }
@@ -37,10 +45,11 @@ public class FunctionDeclaration : ICanBeExpressedAsXML
   }
 
   // returning function without parameters
-  public static FunctionDeclaration PrimitiveReturner(string name, DataType returns, StatementList statements, VariableDeclarationList variables, FunctionArgument[] arguments)
+  public static FunctionDeclaration PrimitiveReturner(string name, DataType returns, StatementList statements, VariableDeclarationList variables, FunctionArgument[] arguments, FunctionType type)
   {
     return new FunctionDeclaration()
     {
+      Type = type,
       Name = name,
       ReturnType = returns,
       Statements = statements,
@@ -50,7 +59,7 @@ public class FunctionDeclaration : ICanBeExpressedAsXML
   }
 
   // if returning pointer type/object type without parameters
-  public static FunctionDeclaration ClassReturner(string name, string returnTypeClassName, StatementList statements, VariableDeclarationList variables, FunctionArgument[] arguments)
+  public static FunctionDeclaration ClassReturner(string name, string returnTypeClassName, StatementList statements, VariableDeclarationList variables, FunctionArgument[] arguments, FunctionType type)
   {
     return new FunctionDeclaration()
     {
@@ -68,8 +77,24 @@ public class FunctionDeclaration : ICanBeExpressedAsXML
     string indent = new string('\t', indentLevel);
     string indent2 = new string('\t', indentLevel + 1);
     StringBuilder sb = new StringBuilder();
-    sb.Append(indent);
-    sb.AppendLine("<function>");
+
+    switch (Type)
+    {
+      case FunctionType.Method:
+        sb.Append(indent);
+        sb.AppendLine("<method>");
+        break;
+      case FunctionType.Constructor:
+        sb.Append(indent);
+        sb.AppendLine("<constructor>");
+        break;
+      case FunctionType.Function:
+        sb.Append(indent);
+        sb.AppendLine("<function>");
+        break;
+      default:
+        throw new Exception("fuck you");
+    }
 
     sb.Append(indent2);
     if (ReturnType == DataType.CLASS_REF)
@@ -102,8 +127,23 @@ public class FunctionDeclaration : ICanBeExpressedAsXML
 
     sb.Append(Statements.ToXML(indentLevel + 1));
 
-    sb.Append(indent);
-    sb.AppendLine("</function>");
+    switch (Type)
+    {
+      case FunctionType.Method:
+        sb.Append(indent);
+        sb.AppendLine("</method>");
+        break;
+      case FunctionType.Constructor:
+        sb.Append(indent);
+        sb.AppendLine("</constructor>");
+        break;
+      case FunctionType.Function:
+        sb.Append(indent);
+        sb.AppendLine("</function>");
+        break;
+      default:
+        throw new Exception("fuck you");
+    }
 
     return sb.ToString();
   }

@@ -4,7 +4,7 @@ using Jack_Compiler.Common;
 
 public class StatementList : List<Statement>, ICanBeExpressedAsXML {
 
-    public string ToXML(int indentLevel = 0) {
+    public string ToXML(int indentLevel) {
         StringBuilder sb = new StringBuilder();
         string indent = new string('\t', indentLevel);
         sb.Append(indent);

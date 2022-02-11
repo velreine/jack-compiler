@@ -1,40 +1,36 @@
 using Jack_Compiler.Common;
 using System.Text;
-// using Family.Your.Mom.Kan.Ikke.Stave.Til.Det;
-// using Kentuky.Family.Incest;
 
 public class ClassDeclaration : ICanBeExpressedAsXML
 {
-  // Static variables ?
   public string Name { get; init; }
   public VariableDeclarationList VariableDeclarations { get; init; }
-  public FunctionDeclaration Constructor { get; init; }
-  public FunctionDeclaration[] FunctionDeclarations { get; init; }
+  public FunctionDeclaration[] SubroutineDeclarations { get; init; }
 
-  // gør Camilla super glad
-  public ClassDeclaration() : base()
+  // woo say the same thing 4 times wooooooooooooooooooooooo
+  public ClassDeclaration(string name, VariableDeclarationList variableDeclarations, FunctionDeclaration[] subroutineDeclarations) : base()
   {
-    // Constructor skal være her ellers bliver Camilla sur.
-    // Camilla when no constructor:
-    // https://www.google.com/search?q=angry+spongebob+ip+address&tbm=isch&ved=2ahUKEwj4z42t6fT1AhVCXcAKHS1VB9wQ2-cCegQIABAA&oq=angry+spongebob+ip+address&gs_lcp=CgNpbWcQAzoHCCMQ7wMQJzoFCAAQgAQ6BAgAEENQtgJY7BVg1RZoAHAAeACAAUqIAeIFkgECMTKYAQCgAQGqAQtnd3Mtd2l6LWltZ8ABAQ&sclient=img&ei=7toEYvigJcK6gQatqp3gDQ&bih=969&biw=1920&rlz=1C1GCEA_enDK906DK906#imgrc=epHLPTLgOCa6aM
+    this.Name = name;
+    this.VariableDeclarations = variableDeclarations;
+    this.SubroutineDeclarations = subroutineDeclarations;
   }
-
 
   public string ToXML(int indentLevel)
   {
+    string indent = new string('\t', indentLevel);
+    string indent2 = new string('\t', indentLevel + 1);
     StringBuilder sb = new StringBuilder();
 
+    sb.AppendLine($"{indent}<class>");
+    
+    sb.AppendLine($"{indent2}<name>{Name}</name>");
 
+    sb.Append(VariableDeclarations.ToXML(indentLevel + 1));
 
+    sb.Append(SubroutineDeclarations.ToXML("subroutine-declarations", indentLevel + 1));
 
-
-
-
-
-
-
+    sb.AppendLine($"{indent}</class>");
 
     return sb.ToString(); ;
   }
-
 }

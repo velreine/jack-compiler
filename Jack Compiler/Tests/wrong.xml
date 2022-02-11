@@ -1,7 +1,18 @@
 <token-list>
+	<keyword>class</keyword>
+	<identifier>Ass</identifier>
+	<symbol>{</symbol>
+	<keyword>static</keyword>
+	<keyword>boolean</keyword>
+	<identifier>a</identifier>
+	<symbol>;</symbol>
+	<keyword>static</keyword>
+	<keyword>int</keyword>
+	<identifier>foobar</identifier>
+	<symbol>;</symbol>
 	<keyword>function</keyword>
 	<keyword>void</keyword>
-	<identifier>fuckMigHaardt</identifier>
+	<identifier>frickMigHoardt</identifier>
 	<symbol>(</symbol>
 	<identifier>Papa</identifier>
 	<identifier>argOne</identifier>
@@ -10,6 +21,10 @@
 	<identifier>argTwo</identifier>
 	<symbol>)</symbol>
 	<symbol>{</symbol>
+	<keyword>var</keyword>
+	<keyword>int</keyword>
+	<identifier>boobar</identifier>
+	<symbol>;</symbol>
 	<keyword>if</keyword>
 	<symbol>(</symbol>
 	<int-literal>1</int-literal>
@@ -73,5 +88,6 @@
 	<keyword>return</keyword>
 	<identifier>argThree</identifier>
 	<symbol>;</symbol>
+	<symbol>}</symbol>
 	<symbol>}</symbol>
 </token-list>

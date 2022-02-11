@@ -197,6 +197,7 @@ public class BadJokes
     "Hey Lukas, kan du ikke lige lave et JavaScript Script?",
     "Hvad kalder man en luder i kørestol?\nEn firehjuls trækker.",
     "Hvad siger Jeppe til sin kæreste, når hun bløder ud af næsen?\nIkke noget, han behøver ikke sige det to gange.",
+    "Thomas har 40 sneakers.\nThomas spiser 35 af dem, hvad har Thomas nu?\nDiabetes.",
     "Fuck Lukas.",
     "Fuck Benjamin.",
     "Fuck Nicklas.",

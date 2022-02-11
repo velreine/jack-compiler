@@ -3,7 +3,7 @@ class Ass{
   static boolean a;
   static int foobar;
 
-  function void frickMigHaardt(Papa argOne, Mommy argTwo) {
+  function void frickMigHoardt(Papa argOne, Mommy argTwo) {
     var int boobar;
     if(1){
       let a = 1 + b;

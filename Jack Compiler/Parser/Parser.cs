@@ -233,24 +233,51 @@ public class Parser
     return Statement.ReturnStatement();
   }
 
-  private (StatementList statements, VariableDeclarationList variableDeclarations) ParseClassBlock()
+  private VariableDeclaration ParseClassVariableDeclarations() {
+    VariableType varType;
+
+    var next = GetNextToken();
+
+    switch(next.Type){
+      case TokenType.KEYWORD_FIELD:
+        varType = VariableType.Field;
+        break;
+      case TokenType.KEYWORD_STATIC:
+        varType = VariableType.Static;
+        break;
+      default:
+        throw new System.Exception("called parseclassvariabledeclaration without next token being valid, it was: " + next.Type.ToString());
+    }
+
+    var type = GetNextToken();
+    var name = ExpectToken(TokenType.IDENTIFIER);
+    ExpectToken(TokenType.SYMBOL_SEMI_COLON);
+    if (type.Type == TokenType.IDENTIFIER) {
+      return VariableDeclaration.ClassVar(name.StringValue, type.StringValue, varType);
+    } else {
+      return VariableDeclaration.Primitive(name.StringValue, typeMap[type.Type], varType);
+    }
+  }
+
+  private (VariableDeclarationList statements, FunctionDeclaration[] subroutines) ParseClassBlock()
   {
     ExpectToken(TokenType.SYMBOL_LEFT_BRACE);
 
-    var stmts = new StatementList();
+    var subroutines = new List<FunctionDeclaration>();
     var variableDeclarations = new VariableDeclarationList();
 
-    while (CheckToken(TokenType.KEYWORD_VAR))
+    while (CheckToken(TokenType.KEYWORD_STATIC) || CheckToken(TokenType.KEYWORD_FIELD))
     {
-      variableDeclarations.Add(ParseVarDeclaration());
+      variableDeclarations.Add(ParseClassVariableDeclarations());
     }
-    while (HasNextToken() && !CheckToken(TokenType.SYMBOL_RIGHT_BRACE))
+
+    while (CheckToken(TokenType.KEYWORD_CONSTRUCTOR) || CheckToken(TokenType.KEYWORD_FUNCTION) || CheckToken(TokenType.KEYWORD_METHOD))
     {
-      stmts.Add(ParseStatement());
+      subroutines.Add(ParseSubroutine());
     }
 
     ExpectToken(TokenType.SYMBOL_RIGHT_BRACE);
-    return (stmts, variableDeclarations);
+    return (variableDeclarations, subroutines.ToArray());
   }
 
   private (StatementList statements, VariableDeclarationList variableDeclarations) ParseFunctionBlock()
@@ -327,9 +354,21 @@ public class Parser
     }
   }
 
-  private FunctionDeclaration ParseFunction()
-  {
-    ExpectToken(TokenType.KEYWORD_FUNCTION);
+  private FunctionDeclaration ParseSubroutine() {
+    FunctionType type;
+    switch (GetNextToken().Type) {
+    case TokenType.KEYWORD_FUNCTION:
+      type = FunctionType.Function;
+      break;
+    case TokenType.KEYWORD_METHOD:
+      type = FunctionType.Method;
+      break;
+    case TokenType.KEYWORD_CONSTRUCTOR:
+      type = FunctionType.Constructor;
+      break;
+    default:
+      throw new Exception("called ParseSubroutine without having fuck you");
+    }
 
     var returnTypeToken = GetNextToken();
     if (!typeMap.ContainsKey(returnTypeToken.Type))
@@ -360,26 +399,26 @@ public class Parser
 
     if (returnTypeToken.Type == TokenType.IDENTIFIER)
     {
-      return FunctionDeclaration.ClassReturner(identifier.StringValue, returnTypeToken.StringValue, block.statements, block.variableDeclarations, args.ToArray());
+      return FunctionDeclaration.ClassReturner(identifier.StringValue, returnTypeToken.StringValue, block.statements, block.variableDeclarations, args.ToArray(), type);
     }
     else
     {
       typeMap.TryGetValue(returnTypeToken.Type, out var returnType);
-      return FunctionDeclaration.PrimitiveReturner(identifier.StringValue, returnType, block.statements, block.variableDeclarations, args.ToArray());
+      return FunctionDeclaration.PrimitiveReturner(identifier.StringValue, returnType, block.statements, block.variableDeclarations, args.ToArray(), type);
     }
   }
 
-  private ClassDeclaration ParseClass(){
+  private JackAST ParseClass(){
     ExpectToken(TokenType.KEYWORD_CLASS);
     var className = ExpectToken(TokenType.IDENTIFIER);
     var classblock = ParseClassBlock();
-    return null;
+    return new JackAST/*ClassDeclaration.NewClassDeclorationWithNameThatAnnoysNicky*/(className.StringValue, classblock.statements, classblock.subroutines);
   }
 
-  public /*JackAST*/FunctionDeclaration ParseTokens()
+  public JackAST ParseTokens()
   {
 
     // sindsygt nu R vi done.4
-    return ParseFunction();
+    return ParseClass();
   }
 }
